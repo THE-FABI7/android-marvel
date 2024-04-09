@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +22,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView labTittle = null;
     private TextView labDescripcion = null;
     private EditText editTextMovieName;
+
+    private ImageView imgPoster = null;
+
     private MarvelApi marvelApi = new MarvelApi();
 
     @Override
@@ -29,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initViews();
         initEvents();
-
     }
 
     public void initViews() {
@@ -37,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
       labTittle = findViewById(R.id.labTittle);
       labDescripcion = findViewById(R.id.labDescripcion);
       editTextMovieName = findViewById(R.id.editTextMovieName);
-
     }
 
     public void initEvents() {
@@ -47,24 +49,43 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void requestMovieInfo() {
-        String movieName = editTextMovieName.getText().toString();
-        if (movieName.isEmpty()) {
+        String personajeName = editTextMovieName.getText().toString();
+        if (personajeName.isEmpty()) {
             // Mostrar mensaje de error si el campo está vacío
             Toast.makeText(MainActivity.this, "Por favor ingrese el nombre del personaje", Toast.LENGTH_SHORT).show();
             return;
         }
 
-
-
-
+        marvelApi.requestMovieInfo(personajeName, text ->{
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            var root = gsonBuilder.create().fromJson(text, Root.class);
+            if (root.getName() != null && !root.getName().isEmpty()) {
+                Log.d("data", root.getName());
+                requestImage(root);
+            } else {
+                // Mostrar mensaje de error
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "Personaje no encontrado", Toast.LENGTH_SHORT).show();
+                });
+            }
+        }, errorCode -> {
+            Log.d("error", String.valueOf(errorCode));
+        });
     }
 
     public void showMovieInfo(Root info, Bitmap image) {
-
+         labTittle.setText("Nombre: " + info.getName());
+         labDescripcion.setText("Descripción: " + info.getDescription());
+         imgPoster.setImageBitmap(image);
     }
 
     public void requestImage(Root info) {
-
+        String imageUrl = info.getThumbnail().getPath() + "." + info.getThumbnail().getExtension();
+        marvelApi.requestImage(imageUrl, image -> {
+            runOnUiThread(() -> showMovieInfo(info, image));
+        }, errorCode -> {
+            Log.d("error", String.valueOf(errorCode));
+        });
     }
 
 }

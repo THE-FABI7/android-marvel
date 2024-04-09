@@ -9,17 +9,17 @@ import cafsoft.foundation.URLSession;
 
 
 public class MarvelApi extends RemoteDataSource {
-    private final String BASE_URL = "https://gateway.marvel.com/v1/public/characters?";
+    private final String BASE_URL = "http://gateway.marvel.com/v1/public/characters";
     private final String API_KEY = "13977f0967de4387afcc0e28c8098b5f";
 
     private final String HASH = "dc1b084f62cec1c34c3f1060f58f3cc9";
 
     private final String ts = "1712458514";
 
-    public  void requestMovieInfo(String title, TextCompletionHandler textCompletionHandler, ErrorCodeCompletionHandler errorCodeCompletionHandler) {
+    public  void requestMovieInfo(String name, TextCompletionHandler textCompletionHandler, ErrorCodeCompletionHandler errorCodeCompletionHandler) {
         var comp = new URLComponents(BASE_URL);
         comp.setQueryItems(new URLQueryItem[]{
-                new URLQueryItem("name", title),
+                new URLQueryItem("name", name),
                 new URLQueryItem("apiKey", API_KEY),
                 new URLQueryItem("hash", HASH),
                 new URLQueryItem("ts", ts),
