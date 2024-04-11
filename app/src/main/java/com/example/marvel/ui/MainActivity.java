@@ -68,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
         marvelApi.requestMovieInfo(personajeName, text ->{
             GsonBuilder gsonBuilder = new GsonBuilder();
             var root = gsonBuilder.create().fromJson(text, Root.class);
-            Log.d("data", root.getName());
             if (root.getName() != null && !root.getName().isEmpty()) {
                 Log.d("data", root.getName());
                 requestImage(root);

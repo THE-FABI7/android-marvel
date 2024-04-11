@@ -31,7 +31,6 @@ public class MarvelApi extends RemoteDataSource {
         //Get Default URLsession
         var session = URLSession.getShared();
 
-
         //create a network task for the GET request
         var task = createDataTask(url, session, (errorCode, data) -> {
             if (errorCode == 200) {
