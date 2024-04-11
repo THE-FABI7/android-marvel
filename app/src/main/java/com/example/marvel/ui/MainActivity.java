@@ -3,6 +3,8 @@ package com.example.marvel.ui;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Bitmap;
+import android.icu.text.IDNA;
+import android.os.StrictMode;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -14,7 +16,14 @@ import android.widget.Toast;
 import com.example.marvel.R;
 import com.example.marvel.data.remote.MarvelApi;
 import com.example.marvel.domain.model.Root;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import cafsoft.foundation.HTTPURLResponse;
+import cafsoft.foundation.URLComponents;
+import cafsoft.foundation.URLQueryItem;
+import cafsoft.foundation.URLRequest;
+import cafsoft.foundation.URLSession;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -59,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
         marvelApi.requestMovieInfo(personajeName, text ->{
             GsonBuilder gsonBuilder = new GsonBuilder();
             var root = gsonBuilder.create().fromJson(text, Root.class);
+            Log.d("data", root.getName());
             if (root.getName() != null && !root.getName().isEmpty()) {
                 Log.d("data", root.getName());
                 requestImage(root);
@@ -87,5 +97,4 @@ public class MainActivity extends AppCompatActivity {
             Log.d("error", String.valueOf(errorCode));
         });
     }
-
 }
