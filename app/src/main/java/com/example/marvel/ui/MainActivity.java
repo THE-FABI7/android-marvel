@@ -69,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
             GsonBuilder gsonBuilder = new GsonBuilder();
             var root = gsonBuilder.create().fromJson(text, Root.class);
             if (root.getName() != null && !root.getName().isEmpty()) {
-                Log.d("data", root.getName());
-                requestImage(root);
+                    Log.d("data", root.getName());
+                    requestImage(root);
             } else {
                 // Mostrar mensaje de error
                 runOnUiThread(() -> {
@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void requestImage(Root info) {
         String imageUrl = info.getThumbnail().getPath() + "." + info.getThumbnail().getExtension();
+        Log.d("urlimagen", imageUrl);
         marvelApi.requestImage(imageUrl, image -> {
             runOnUiThread(() -> showMovieInfo(info, image));
         }, errorCode -> {

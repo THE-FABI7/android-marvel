@@ -2,6 +2,7 @@ package com.example.marvel.data.remote;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import cafsoft.foundation.URLComponents;
 import cafsoft.foundation.URLQueryItem;
@@ -9,7 +10,7 @@ import cafsoft.foundation.URLSession;
 
 
 public class MarvelApi extends RemoteDataSource {
-    private final String BASE_URL = "http://gateway.marvel.com/v1/public/characters";
+    private final String BASE_URL = "https://gateway.marvel.com/v1/public/characters";
     private final String API_KEY = "13977f0967de4387afcc0e28c8098b5f";
 
     private final String HASH = "dc1b084f62cec1c34c3f1060f58f3cc9";
@@ -20,13 +21,15 @@ public class MarvelApi extends RemoteDataSource {
         var comp = new URLComponents(BASE_URL);
         comp.setQueryItems(new URLQueryItem[]{
                 new URLQueryItem("name", name),
-                new URLQueryItem("apiKey", API_KEY),
+                new URLQueryItem("apikey", API_KEY),
                 new URLQueryItem("hash", HASH),
                 new URLQueryItem("ts", ts),
         });
 
         //Generate the URL from the components
         var url = comp.getURL();
+
+        Log.d("url", url.toString());
 
         //Get Default URLsession
         var session = URLSession.getShared();
