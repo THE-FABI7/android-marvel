@@ -29,8 +29,6 @@ public class MarvelApi extends RemoteDataSource {
         //Generate the URL from the components
         var url = comp.getURL();
 
-        Log.d("url", url.toString());
-
         //Get Default URLsession
         var session = URLSession.getShared();
 

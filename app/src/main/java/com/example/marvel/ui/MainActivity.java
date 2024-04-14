@@ -3,8 +3,6 @@ package com.example.marvel.ui;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Bitmap;
-import android.icu.text.IDNA;
-import android.os.StrictMode;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -15,15 +13,9 @@ import android.widget.Toast;
 
 import com.example.marvel.R;
 import com.example.marvel.data.remote.MarvelApi;
-import com.example.marvel.domain.model.Root;
-import com.google.gson.Gson;
+import com.example.marvel.domain.model.Result;
+import com.example.marvel.domain.model.Welcome4;
 import com.google.gson.GsonBuilder;
-
-import cafsoft.foundation.HTTPURLResponse;
-import cafsoft.foundation.URLComponents;
-import cafsoft.foundation.URLQueryItem;
-import cafsoft.foundation.URLRequest;
-import cafsoft.foundation.URLSession;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
       labTittle = findViewById(R.id.labTittle);
       labDescripcion = findViewById(R.id.labDescripcion);
       editTextMovieName = findViewById(R.id.editTextMovieName);
+      imgPoster = findViewById(R.id.imgPoster);
     }
 
     public void initEvents() {
@@ -65,36 +58,51 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        marvelApi.requestMovieInfo(personajeName, text ->{
+        marvelApi.requestMovieInfo(personajeName, text -> {
             GsonBuilder gsonBuilder = new GsonBuilder();
-            var root = gsonBuilder.create().fromJson(text, Root.class);
-            if (root.getName() != null && !root.getName().isEmpty()) {
-                    Log.d("data", root.getName());
-                    requestImage(root);
-            } else {
-                // Mostrar mensaje de error
-                runOnUiThread(() -> {
-                    Toast.makeText(MainActivity.this, "Personaje no encontrado", Toast.LENGTH_SHORT).show();
-                });
+            // ... (estrategia personalizada de nombres de campos)
+            try {
+                Welcome4 welcome = gsonBuilder.create().fromJson(text, Welcome4.class);
+                Result[] results = welcome.getData().getResults();
+
+                if (results.length > 0) {
+                    Result result = results[0];
+                    if (result.getName() != null) {
+                        Log.d("data", result.getName());
+                        requestImage(result);
+                    }
+                } else if (results.length < 0){
+                    runOnUiThread(() -> {
+                        Toast.makeText(MainActivity.this, "Película no encontrada", Toast.LENGTH_SHORT).show();
+                    });
+                }
+            } catch (Exception e) {
+                Log.e("error", "Error parsing JSON response", e);
             }
         }, errorCode -> {
             Log.d("error", String.valueOf(errorCode));
         });
     }
 
-    public void showMovieInfo(Root info, Bitmap image) {
+    public void showMovieInfo(Result info, Bitmap image) {
          labTittle.setText("Nombre: " + info.getName());
          labDescripcion.setText("Descripción: " + info.getDescription());
          imgPoster.setImageBitmap(image);
     }
 
-    public void requestImage(Root info) {
+    public void requestImage(Result info) {
         String imageUrl = info.getThumbnail().getPath() + "." + info.getThumbnail().getExtension();
         Log.d("urlimagen", imageUrl);
         marvelApi.requestImage(imageUrl, image -> {
-            runOnUiThread(() -> showMovieInfo(info, image));
+            if (image != null) { // Check if image is downloaded successfully
+                runOnUiThread(() -> showMovieInfo(info, image));
+            } else {
+                // Handle failed image download (e.g., show error message)
+                Log.e("error", "Failed to download image");
+            }
         }, errorCode -> {
             Log.d("error", String.valueOf(errorCode));
         });
     }
+
 }

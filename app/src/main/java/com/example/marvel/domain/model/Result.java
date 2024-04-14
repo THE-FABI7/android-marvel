@@ -1,7 +1,7 @@
 package com.example.marvel.domain.model;
 
 
-public class Root {
+public class Result {
     private long id;
     private String name;
     private String description;
